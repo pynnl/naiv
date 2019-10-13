@@ -16,6 +16,13 @@ type Observable = {
   [prop: string]: any
 }
 
+const observable = (value?) => {
+  const target = () => {}
+  target._value = value
+  target._updates = new Set()
+  return new Proxy(target, HANDLER) as unknown as Observable
+}
+
 const HANDLER: ProxyHandler<Target> = {
   apply (target, _this, args: any[]) {
     if (args.length) {
@@ -25,34 +32,31 @@ const HANDLER: ProxyHandler<Target> = {
         clean()
       }
     } else {
-      if (G._targets)
-        G._targets.add(target)
-
-      return typeof target._value === 'function'
-        ? target._value()
-        : target._value
+      G._targets && G._targets.add(target)
+      return target._value
     }
   },
   get: (target, prop) => {
-    return prop === TARGET
-      ? target
-      : target._value[prop]
+    if (prop === TARGET) return target
+    G._targets && G._targets.add(target)
+
+    const item = target._value[prop]
+    return typeof item === 'function' && !item[TARGET]
+      ? item.bind(target._value)
+      : item
   },
   set: (target, prop, value) => {
-    target._value[prop] = value
+    if (target._value[prop] !== value) {
+      target._value[prop] = value
+      TARGET_QUEUE.add(target)
+      clean()
+    }
     return true
   }
 }
 
-const observable = (value?) => {
-  const target = () => {}
-  target._value = value
-  target._updates = new Set()
-  return new Proxy(target, HANDLER) as unknown as Observable
-}
-
-const trigger = (observable: Observable) => {
-  TARGET_QUEUE.add(observable[TARGET])
+const trigger = (obs: Observable) => {
+  TARGET_QUEUE.add(obs[TARGET])
   clean()
 }
 
