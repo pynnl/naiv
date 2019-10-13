@@ -1,0 +1,37 @@
+env:
+  browser: true
+  es6: true
+  node: true
+  jest: true
+extends:
+  - standard-with-typescript
+globals:
+  Atomics: readonly
+  SharedArrayBuffer: readonly
+parser: '@typescript-eslint/parser'
+parserOptions:
+  ecmaVersion: 2018
+  sourceType: module
+  project: tsconfig.json
+
+  # bugs
+  createDefaultProgram: true
+plugins:
+  - '@typescript-eslint'
+rules:
+  curly: [2, multi-or-nest, consistent]
+  no-return-assign: 0
+  symbol-description: 0
+
+  '@typescript-eslint/indent': [2, 2, { 
+    flatTernaryExpressions: true,
+    ignoredNodes: ['TemplateLiteral > *.expressions']
+  }]
+  '@typescript-eslint/consistent-type-definitions': [2, type]
+  '@typescript-eslint/restrict-plus-operands': 0
+  '@typescript-eslint/consistent-type-assertions': 0
+  '@typescript-eslint/explicit-function-return-type': 0
+  '@typescript-eslint/strict-boolean-expressions': 0
+
+  # bugs
+  no-undef: 0

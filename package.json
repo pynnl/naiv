@@ -1,0 +1,31 @@
+{
+  "name": "naiv",
+  "version": "0.0.1-0",
+  "description": "",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.js",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "author": "pynnl",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^24.0.18",
+    "@typescript-eslint/eslint-plugin": "^2.3.3",
+    "@typescript-eslint/parser": "^2.3.3",
+    "eslint": "^6.5.1",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-config-standard-with-typescript": "^10.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^24.9.0",
+    "rollup": "^1.23.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^5.1.2",
+    "rollup-plugin-typescript2": "^0.24.3",
+    "ts-jest": "^24.1.0",
+    "typescript": "^3.6.3"
+  }
+}
