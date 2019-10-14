@@ -6,12 +6,12 @@ export default {
   input: 'src/index.ts',
   output: [{
     format: 'umd',
-    file: 'dist/index.umd.js',
+    file: 'dist/index.js',
     sourcemap: true,
     name: 'naiv'
   }, {
     format: 'es',
-    file: 'dist/index.js',
+    file: 'dist/index.es.js',
     sourcemap: true
   }],
   plugins: [

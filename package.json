@@ -1,7 +1,7 @@
 {
   "name": "naiv",
   "version": "0.0.1-1",
-  "description": "",
+  "description": "A simple JS template library.",
   "keywords": [
     "framework",
     "html",
@@ -10,12 +10,10 @@
   "license": "MIT",
   "author": "pynnl",
   "files": [
-    "dist",
-    "LICENSE",
-    "README.md"
+    "dist"
   ],
-  "main": "dist/index.umd.js",
-  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "scripts": {
     "build": "rollup -c"
   },
