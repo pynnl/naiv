@@ -60,8 +60,8 @@ it('value is observable', () => {
   let v
   const a = observable('a')
   const b = observable('b')
-  const c = observable()
-  watch(() => v = c())
+  const c = observable('c')
+  watch(() => v = String(c))
 
   c(a)
   expect(v).toBe('a')

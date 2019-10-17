@@ -55,8 +55,8 @@ it('value is observable', () => {
   const c = observable()
 
   c(a)
-  expect(c()).toBe('a')
+  expect(String(c)).toBe('a')
 
   c(b)
-  expect(c()).toBe('b')
+  expect(String(c)).toBe('b')
 })

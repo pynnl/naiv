@@ -5,6 +5,8 @@ const getLIS = (nums: readonly number[]) => {
 
   for (let i = 1; i < nums.length; ++i) {
     const num = nums[i]
+    if (num === undefined) continue
+
     for (let j = sequences.length - 1; j >= 0; --j) {
       const sequence = sequences[j]
 

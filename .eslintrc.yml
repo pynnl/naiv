@@ -28,6 +28,7 @@ rules:
     ignoredNodes: ['TemplateLiteral > *.expressions']
   }]
   '@typescript-eslint/consistent-type-definitions': [2, type]
+  '@typescript-eslint/array-type': 0
   '@typescript-eslint/restrict-plus-operands': 0
   '@typescript-eslint/consistent-type-assertions': 0
   '@typescript-eslint/explicit-function-return-type': 0

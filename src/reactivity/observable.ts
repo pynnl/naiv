@@ -10,7 +10,7 @@ type Target = {
   readonly _updates: Set<Update>
 }
 
-type Observable = {
+type Observable = number & {
   (value?)
   readonly [TARGET]: Target
   [prop: string]: any
@@ -38,8 +38,8 @@ const HANDLER: ProxyHandler<Target> = {
   },
   get: (target, prop) => {
     if (prop === TARGET) return target
-    G._targets && G._targets.add(target)
 
+    G._targets && G._targets.add(target)
     const item = target._value[prop]
     return typeof item === 'function' && !item[TARGET]
       ? item.bind(target._value)
