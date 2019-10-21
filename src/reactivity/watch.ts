@@ -1,34 +1,37 @@
-import { G } from '../global'
-import { Observable, TARGET } from './observable'
-import { Update, runUpdate } from './update'
-import { clean } from './clean'
+import { Target } from './observable'
+import { TRACK } from './track'
 
-const watch = (
-  callback: () => void,
-  ...observables: Observable[]
-) => {
-  const update: Update = {
-    _callback: callback,
-    _targets: new Set()
+type Update = {
+  ()
+  _targets: Set<Target>
+}
+
+const watch = (callback: Function) => {
+  const update = () => runUpdate(callback, update)
+  update._targets = new Set<Target>()
+  TRACK._updates && TRACK._updates.add(update)
+  update()
+}
+
+const runUpdate = (callback: Function, update: Update) => {
+  const prevTargets = TRACK._targets
+  TRACK._targets = new Set()
+
+  callback()
+
+  for (const e of update._targets) {
+    if (!TRACK._targets.has(e))
+      e._updates.delete(update)
   }
 
-  if (observables.length) {
-    update._partialTrack = true
+  for (const e of TRACK._targets)
+    e._updates.add(update)
 
-    for (const e of observables) {
-      const target = e[TARGET]
-      target._updates.add(update)
-      update._targets.add(target)
-    }
-  }
-
-  if (G._updates)
-    G._updates.add(update)
-
-  runUpdate(update)
-  clean()
+  update._targets = TRACK._targets
+  TRACK._targets = prevTargets
 }
 
 export {
+  Update,
   watch
 }

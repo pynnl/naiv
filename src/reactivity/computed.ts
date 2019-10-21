@@ -1,9 +1,9 @@
 import { observable } from './observable'
 import { watch } from './watch'
 
-const computed = (getter: () => any) => {
+const computed = (getValue: Function) => {
   const o = observable()
-  watch(() => o(getter()))
+  watch(() => o.$ = getValue())
   return o
 }
 

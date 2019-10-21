@@ -1,69 +1,59 @@
-import { G, TARGET_QUEUE } from '../global'
-import { Update } from './update'
-import { clean } from './clean'
+import { Update } from './watch'
+import { update } from './updates'
+import { TRACK } from './track'
 
 const TARGET = Symbol()
 
 type Target = {
-  ()
   _value: any
-  readonly _updates: Set<Update>
+  _updates: Set<Update>
 }
 
 type Observable = number & {
-  (value?)
-  readonly [TARGET]: Target
+  $: any
   [prop: string]: any
+  readonly [TARGET]: Target
 }
 
-const observable = (value?) => {
-  const target = () => {}
-  target._value = value
-  target._updates = new Set()
-  return new Proxy(target, HANDLER) as unknown as Observable
-}
+const observable = (_value?) => new Proxy({
+  _value,
+  _updates: new Set()
+}, HANDLER) as unknown as Observable
 
 const HANDLER: ProxyHandler<Target> = {
-  apply (target, _this, args: any[]) {
-    if (args.length) {
-      if (target._value !== args[0]) {
-        target._value = args[0]
-        TARGET_QUEUE.add(target)
-        clean()
-      }
-    } else {
-      G._targets && G._targets.add(target)
-      return target._value
-    }
-  },
   get: (target, prop) => {
-    if (prop === TARGET) return target
+    if (prop === TARGET)
+      return target
 
-    G._targets && G._targets.add(target)
+    if (prop === '$update')
+      return () => update(target)
+
+    TRACK._targets && TRACK._targets.add(target)
+    if (prop === '$')
+      return target._value
+
     const item = target._value[prop]
     return typeof item === 'function' && !item[TARGET]
       ? item.bind(target._value)
       : item
   },
   set: (target, prop, value) => {
-    if (target._value[prop] !== value) {
+    if (prop === '$') {
+      if (target._value !== value) {
+        target._value = value
+        update(target)
+      }
+    } else if (target._value[prop] !== value) {
       target._value[prop] = value
-      TARGET_QUEUE.add(target)
-      clean()
+      update(target)
     }
     return true
   }
-}
-
-const trigger = (obs: Observable) => {
-  TARGET_QUEUE.add(obs[TARGET])
-  clean()
 }
 
 export {
   Target,
   Observable,
   TARGET,
-  observable,
-  trigger
+  observable
 }
