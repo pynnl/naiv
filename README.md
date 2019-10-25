@@ -8,20 +8,23 @@ Naive implementation of a template library
 import { observable } from 'naiv'
 
 const o = observable()
-console.log(o()) // undefined
+console.log(o.$) // undefined
 
-o('hello world')
-console.log(o()) // hello world
+o.$ = 'hello world'
+console.log(o.$) // hello world
+console.log(o + '!') // hello world!
 ```
 
 ## watch
 ```javascript
 import { observable, watch } from 'naiv'
+let n
+const o = observable(0)
+watch(() => n = o + 1)
+console.log(n) // 1
 
-const o = observable()
-watch(() => console.log(o())) // undefined
-
-o('hello world') // hello world
+o.$ = 1
+console.log(n) // 2
 ```
 
 ```javascript
@@ -29,9 +32,9 @@ import { observable, watch } from 'naiv'
 
 const o = observable(0)
 watch(() => {
-  console.log(o())
-  if (o() < 10)
-    o(o() + 1)
+  console.log(o.$)
+  if (o < 10)
+    o.$ += 1
 })
 
 // 0
@@ -42,27 +45,30 @@ watch(() => {
 
 ## template
 ```javascript
-import { html } from 'naiv'
+import { html, render } from 'naiv'
 
-document.body.append(html`<span>hello world</span>`)
+document.body.append(render(() => html`<span>hello world</span>`))
+console.log(document.body.innerHTML) // <span>hello world</span>
 ```
 
 ```javascript
-import { observable, html } from 'naiv'
+import { observable, html, render } from 'naiv'
+
+const Nested = text => html`<div>${text}</div>`
 
 const Component = () => {
   const attr = 'attr'
   const text = observable('text')
-  const nested = html`<div>nested</div>`
   
   return html`
     <div attr=${attr}>
       <span>${text}</span>
-      ${nested}
+      ${render(Nested, 'nested')}
     </div>`
 }
 
-console.log(Component())
+console.log(render(Component))
+
 // <div attr=attr>
 //   <span>text</span>
 //   <div>nested</div>
@@ -70,16 +76,17 @@ console.log(Component())
 ```
 
 ```javascript
+// reactive template
 import { observable, html } from 'naiv'
 
 const o = observable(0)
-const e = html`
+const e = render(() => html`
   <div>
     ${o}
-    ${o() + 1}
-    ${() => o() + 1}
+    ${o + 1}
+    ${() => o + 1}
   </div>
-`
+`)
 console.log(e)
 // <div>
 //   0
@@ -87,7 +94,7 @@ console.log(e)
 //   1
 // </div>
 
-o(1)
+o.$ = 1
 console.log(e)
 // <div>
 //   1
@@ -100,13 +107,8 @@ console.log(e)
 ```javascript
 import { observable, html, map } from 'naiv'
 
-const o = observable(['a', 'b', 'c'])
-const e = map(
-  o, // array observable
-  html`<ul></ul>`, // root element
-  (value, index) => value, // key function
-  (value, index) => html`<li>${value} - ${index}</li>`
-)
+const array = observable(['a', 'b', 'c'])
+const e = map(array, (value, index) => html`<li>${value} - ${index}</li>`)
 console.log(e)
 // <ul>
 //   <li>a - 0</li>
@@ -114,7 +116,7 @@ console.log(e)
 //   <li>c - 2</li>
 // </ul>
 
-o(['a', 'c'])
+o.$ = ['a', 'c']
 console.log(e)
 // <ul>
 //   <li>a - 0</li>
