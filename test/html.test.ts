@@ -63,7 +63,7 @@ describe('attribute', () => {
   })
 })
 
-it('node', () => {
+it('fragment', () => {
   const world = () => html`world`
   const hello = () => html`<a>hello ${render(world)}</a>`
   div.innerHTML = ''
