@@ -37,10 +37,11 @@ const repeat: {
     _items: []
   }
 
+  fragment.append(repeat._anchor)
+
   const update = watch(() => setup(repeat), _array)
   update._onStop = () => repeat._items.forEach(stopItemUpdates)
 
-  fragment.append(repeat._anchor)
   return fragment
 }
 
