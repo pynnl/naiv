@@ -1,5 +1,5 @@
 import { Update } from './watch'
-import { update } from './updates'
+import { runUpdates } from './updates'
 import { TRACK } from './track'
 
 const TARGET = Symbol()
@@ -11,9 +11,12 @@ type Target = {
 
 type Observable = number & {
   $: any
+  $update: () => void
   [prop: string]: any
   readonly [TARGET]: Target
 }
+
+const isObservable = (v): v is Observable => v && v[TARGET]
 
 const observable = (_value?) => new Proxy({
   _value,
@@ -26,7 +29,7 @@ const HANDLER: ProxyHandler<Target> = {
       return target
 
     if (prop === '$update')
-      return () => update(target)
+      return () => runUpdates(target)
 
     TRACK._targets && TRACK._targets.add(target)
     if (prop === '$')
@@ -41,11 +44,11 @@ const HANDLER: ProxyHandler<Target> = {
     if (prop === '$') {
       if (target._value !== value) {
         target._value = value
-        update(target)
+        runUpdates(target)
       }
     } else if (target._value[prop] !== value) {
       target._value[prop] = value
-      update(target)
+      runUpdates(target)
     }
     return true
   }
@@ -55,5 +58,6 @@ export {
   Target,
   Observable,
   TARGET,
+  isObservable,
   observable
 }

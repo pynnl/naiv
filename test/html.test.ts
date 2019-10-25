@@ -1,11 +1,11 @@
-import { observable, html } from '../src'
+import { observable, html, render } from '../src'
 
 const div = document.createElement('div')
 
 describe('text', () => {
   it('raw value', () => {
     div.innerHTML = ''
-    div.append(html`text`)
+    div.append(render(() => html`text`))
     expect(div.innerHTML).toBe('text')
   })
 
@@ -13,58 +13,60 @@ describe('text', () => {
     const o = observable()
 
     div.innerHTML = ''
-    div.append(html`${o}`)
+    div.append(render(() => html`${o}`))
     expect(div.innerHTML).toBe('')
 
-    o(0)
+    o.$ = 0
     expect(div.innerHTML).toBe('0')
 
     div.innerHTML = ''
-    div.append(html`${() => o() + 1}`)
+    div.append(render(() => html`${() => o + 1}`))
     expect(div.innerHTML).toBe('1')
 
-    o(1)
+    o.$ = 1
     expect(div.innerHTML).toBe('2')
   })
 })
 
 describe('attribute', () => {
   it('event', () => {
-    const onclick = () => {}
+    let n = 0
+    const onclick = () => ++n
     div.innerHTML = ''
-    div.append(html`<a onclick=${onclick}></a>`)
-    expect(div.querySelector('a').onclick === onclick)
+    div.append(render(() => html`<a onclick=${onclick}></a>`))
+    div.querySelector('a').click()
+    expect(n).toBe(1)
   })
 
   it('raw value', () => {
     div.innerHTML = ''
-    div.append(html`<a attr=${'attr'}></a>`)
-    expect(div.innerHTML).toBe('<a attr="attr"></a>')
+    div.append(render(() => html`<a href=${'attr'}></a>`))
+    expect(div.innerHTML).toBe('<a href="attr"></a>')
   })
 
   it('observable', () => {
     const o = observable()
 
     div.innerHTML = ''
-    div.append(html`<a attr=${o}></a>`)
-    expect(div.innerHTML).toBe('<a attr="undefined"></a>')
+    div.append(render(() => html`<a href=${o}></a>`))
+    expect(div.innerHTML).toBe('<a href="undefined"></a>')
 
-    o(0)
-    expect(div.innerHTML).toBe('<a attr="0"></a>')
+    o.$ = 0
+    expect(div.innerHTML).toBe('<a href="0"></a>')
 
     div.innerHTML = ''
-    div.append(html`<a attr=${() => o() + 1}></a>`)
-    expect(div.innerHTML).toBe('<a attr="1"></a>')
+    div.append(render(() => html`<a href=${() => o + 1}></a>`))
+    expect(div.innerHTML).toBe('<a href="1"></a>')
 
-    o(1)
-    expect(div.innerHTML).toBe('<a attr="2"></a>')
+    o.$ = 1
+    expect(div.innerHTML).toBe('<a href="2"></a>')
   })
 })
 
 it('node', () => {
-  const world = html`world`
-  const hello = html`<a>hello ${world}</a>`
+  const world = () => html`world`
+  const hello = () => html`<a>hello ${render(world)}</a>`
   div.innerHTML = ''
-  div.append(hello)
+  div.append(render(hello))
   expect(div.innerHTML).toBe('<a>hello world</a>')
 })

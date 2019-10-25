@@ -22,6 +22,7 @@ rules:
   curly: [2, multi-or-nest, consistent]
   no-return-assign: 0
   symbol-description: 0
+  no-labels: 0
 
   '@typescript-eslint/indent': [2, 2, { 
     flatTernaryExpressions: true,
