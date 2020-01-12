@@ -3,6 +3,8 @@ Naive implementation of a template library
 
 **npm**: `npm i -S naiv`
 
+Benchmark: https://krausest.github.io/js-framework-benchmark/current.html
+
 ## observable
 ```javascript
 import { observable } from 'naiv'
